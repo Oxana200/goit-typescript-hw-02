@@ -9,7 +9,6 @@
 .item {
     width: 100%;
     aspect-ratio: 1 / 1;
-    /* Робить блок квадратним (можна змінити пропорцію) */
     overflow: hidden;
     display: flex;
     align-items: center;
