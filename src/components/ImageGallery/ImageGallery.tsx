@@ -1,7 +1,13 @@
 import ImageCard from '../ImageCard/ImageCard';
 import styles from './ImageGallery.module.css';
+import { UnsplashImage } from '../../types';
 
-export default function ImageGallery({ images, onImageClick }) {
+interface ImageGalleryProps {
+  images: UnsplashImage[];
+  onImageClick: (image: UnsplashImage) => void;
+}
+
+export default function ImageGallery({ images, onImageClick }: ImageGalleryProps) {
   return (
     <ul className={styles.gallery}>
       {images.map(image => (

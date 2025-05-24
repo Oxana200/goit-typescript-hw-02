@@ -9,26 +9,41 @@ import ImageModal from './ImageModal/ImageModal';
 import toast from 'react-hot-toast';
 import styles from './App.module.css';
 
+interface UnsplashImage {
+  id: string;
+  alt_description: string | null;
+  description: string | null;
+  urls: {
+    small: string;
+    regular: string;
+    full: string;
+  };
+}
+
+interface UnsplashResponse {
+  results: UnsplashImage[];
+}
+
 const API_URL = 'https://api.unsplash.com/search/photos';
 const API_KEY = import.meta.env.VITE_UNSPLASH_KEY;
 
 export default function App() {
   const [query, setQuery] = useState('');
-  const [images, setImages] = useState([]);
+  const [images, setImages] = useState<UnsplashImage[]>([]);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const [modalData, setModalData] = useState(null);
+  const [modalData, setModalData] = useState<UnsplashImage | null>(null);
 
   useEffect(() => {
     if (!query) return;
 
-    async function fetchImages() {
+    const fetchImages = async (): Promise<void> => {
       try {
         setLoading(true);
         setError(false);
 
-        const response = await axios.get(API_URL, {
+        const response = await axios.get<UnsplashResponse>(API_URL, {
           params: {
             query,
             page,
@@ -37,7 +52,9 @@ export default function App() {
           },
         });
 
-        setImages(prev => (page === 1 ? response.data.results : [...prev, ...response.data.results]));
+        setImages(prev =>
+          page === 1 ? response.data.results : [...prev, ...response.data.results]
+        );
       } catch (err) {
         console.error(err);
         setError(true);
@@ -45,13 +62,13 @@ export default function App() {
       } finally {
         setLoading(false);
       }
-    }
+    };
 
     fetchImages();
   }, [query, page]);
 
-  const handleSearch = value => {
-    if (value === '') {
+  const handleSearch = (value: string): void => {
+    if (value.trim() === '') {
       toast('Please enter a search term');
       return;
     }
@@ -61,15 +78,15 @@ export default function App() {
     setImages([]);
   };
 
-  const loadMore = () => {
+  const loadMore = (): void => {
     setPage(prev => prev + 1);
   };
 
-  const openModal = data => {
+  const openModal = (data: UnsplashImage): void => {
     setModalData(data);
   };
 
-  const closeModal = () => {
+  const closeModal = (): void => {
     setModalData(null);
   };
 
@@ -77,7 +94,7 @@ export default function App() {
     <div className={styles.container}>
       <SearchBar onSubmit={handleSearch} />
 
-      {error && <ErrorMessage />}
+      {error && <ErrorMessage message="Oops! Something went wrong." />}
 
       {images.length > 0 && <ImageGallery images={images} onImageClick={openModal} />}
 

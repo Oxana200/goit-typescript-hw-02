@@ -2,11 +2,26 @@ import Modal from 'react-modal';
 import styles from './ImageModal.module.css';
 import { useEffect } from 'react';
 
-Modal.setAppElement('#root'); // обов’язково
+Modal.setAppElement('#root');
 
-export default function ImageModal({ data, onClose }) {
+interface ImageModalProps {
+  data: {
+    urls: {
+      regular: string;
+    };
+    alt_description: string | null;
+    user?: {
+      name: string;
+    };
+    likes?: number;
+    description?: string | null;
+  } | null;
+  onClose: () => void;
+}
+
+export default function ImageModal({ data, onClose }: ImageModalProps) {
   useEffect(() => {
-    const handleEsc = e => {
+    const handleEsc = (e: KeyboardEvent) => {
       if (e.code === 'Escape') onClose();
     };
 
@@ -14,11 +29,13 @@ export default function ImageModal({ data, onClose }) {
     return () => document.removeEventListener('keydown', handleEsc);
   }, [onClose]);
 
-  const handleBackdropClick = e => {
+  const handleBackdropClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === e.currentTarget) {
       onClose();
     }
   };
+
+  if (!data) return null;
 
   return (
     <Modal
@@ -30,10 +47,11 @@ export default function ImageModal({ data, onClose }) {
     >
       <div onClick={handleBackdropClick}>
         <img src={data.urls.regular} alt={data.alt_description || 'Image'} />
-        <p>Author: {data.user.name}</p>
-        <p>Likes: {data.likes}</p>
+        <p>Author: {data.user?.name || 'Unknown'}</p>
+        <p>Likes: {data.likes ?? 0}</p>
         {data.description && <p>Description: {data.description}</p>}
       </div>
     </Modal>
   );
 }
+
