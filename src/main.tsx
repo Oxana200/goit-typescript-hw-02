@@ -6,10 +6,10 @@ import "./index.css";
 import { Toaster } from 'react-hot-toast';
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
+  <div>
     <App />
     <Toaster position="top-right" />
-  </React.StrictMode>
+  </div>
 );
 
 
